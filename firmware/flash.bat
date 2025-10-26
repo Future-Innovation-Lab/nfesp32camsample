@@ -21,6 +21,9 @@ pause >nul
 
 echo.
 echo [1/3] Flashing bootloader...
+echo Connect IO0 to GND and press RESET button to enter bootloader mode
+echo Press any key when ready...
+pause >nul
 nanoff --target ESP32_CAM_PSRAM --serialport %COMPORT% --deploy --image bootloader.bin --address 0x1000
 if errorlevel 1 (
     echo ERROR: Failed to flash bootloader
@@ -30,6 +33,9 @@ if errorlevel 1 (
 
 echo.
 echo [2/3] Flashing partition table...
+echo Press RESET button to enter bootloader mode again (keep IO0 connected to GND)
+echo Press any key when ready...
+pause >nul
 nanoff --target ESP32_CAM_PSRAM --serialport %COMPORT% --deploy --image partition-table.bin --address 0x8000
 if errorlevel 1 (
     echo ERROR: Failed to flash partition table
@@ -39,6 +45,9 @@ if errorlevel 1 (
 
 echo.
 echo [3/3] Flashing main firmware...
+echo Press RESET button to enter bootloader mode again (keep IO0 connected to GND)
+echo Press any key when ready...
+pause >nul
 nanoff --target ESP32_CAM_PSRAM --serialport %COMPORT% --deploy --image nanoCLR.bin --address 0x10000
 if errorlevel 1 (
     echo ERROR: Failed to flash main firmware
