@@ -1,9 +1,8 @@
+using System;
+using System.IO;
+using System.Diagnostics;
 using nanoFramework.Hardware.Esp32.Camera;
 using nanoFramework.System.IO.FileSystem;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 
 namespace CameraTest
 {
@@ -11,23 +10,37 @@ namespace CameraTest
     {
         public static void Main()
         {
-            Debug.WriteLine("Starting ESP32-CAM with SD card...");
+            Debug.WriteLine("Starting ESP32-CAM test...");
 
-            // ESP32-CAM uses SDIO/MMC interface with 1-bit mode
-            // The pins are fixed by hardware (GPIO14=CLK, GPIO15=CMD, GPIO2=D0)
-            var sdCard = new SDCard(new SDCardMmcParameters
-            {
-                dataWidth = SDCard.SDDataWidth._1_bit
-            });
+            // Try to mount SD card with retry logic (handles busy state from previous session)
+            var sdCard = new SDCard(new SDCardMmcParameters { dataWidth = SDCard.SDDataWidth._1_bit });
 
-            try
+            int retries = 3;
+            bool mounted = false;
+
+            for (int i = 0; i < retries && !mounted; i++)
             {
-                sdCard.Mount();
-                Debug.WriteLine("SD card mounted at D:\\");
+                try
+                {
+                    if (i > 0)
+                    {
+                        Debug.WriteLine($"SD mount retry {i}/{retries - 1}...");
+                        System.Threading.Thread.Sleep(2000);  // Wait for card to finish previous operations
+                    }
+
+                    sdCard.Mount();
+                    mounted = true;
+                    Debug.WriteLine("SD card mounted at D:\\");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Mount attempt {i + 1} failed: {ex.Message}");
+                }
             }
-            catch (Exception ex)
+
+            if (!mounted)
             {
-                Debug.WriteLine($"Failed to mount SD card: {ex.Message}");
+                Debug.WriteLine("Failed to mount SD card after retries");
                 Debug.WriteLine("Make sure:");
                 Debug.WriteLine("- SD card is inserted");
                 Debug.WriteLine("- SD card is formatted as FAT32");
@@ -47,44 +60,87 @@ namespace CameraTest
 
             Debug.WriteLine("Camera initialized!");
 
+            // Generate unique filename prefix for this session
+            DateTime bootTime = DateTime.UtcNow;
+            int imageCounter = 0;
+
             try
             {
-                // Capture and save images
-                for (int i = 1; i <= 5; i++)
+                // Capture images
+                for (int i = 0; i < 5; i++)
                 {
-                    Debug.WriteLine($"\nCapturing image {i}...");
+                    Debug.WriteLine($"\nCapturing image {i + 1}/5...");
+
                     byte[] imageData = camera.CaptureImage();
 
                     if (imageData != null && imageData.Length > 0)
                     {
                         Debug.WriteLine($"Image captured: {imageData.Length} bytes");
 
-                        // Save to SD card
-                        string filename = $"D:\\image{i:D3}.jpg";
-                        File.WriteAllBytes(filename, imageData);
+                        // Verify JPEG header
+                        if (imageData[0] == 0xFF && imageData[1] == 0xD8 && imageData[2] == 0xFF)
+                        {
+                            Debug.WriteLine("Valid JPEG image");
+                        }
 
-                        Debug.WriteLine($"Saved to {filename}");
+                        // Create unique filename: YYYYMMDD_HHMMSS_NNN.jpg
+                        string filename = $"D:\\{bootTime:yyyyMMdd_HHmmss}_{imageCounter++:D3}.jpg";
+
+                        try
+                        {
+                            File.WriteAllBytes(filename, imageData);
+                            Debug.WriteLine($"Saved to {filename}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Failed to save image: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Failed to capture image");
                     }
 
                     System.Threading.Thread.Sleep(1000);
                 }
 
-                // List files
-                Debug.WriteLine("\nFiles on SD card:");
-                string[] files = Directory.GetFiles("D:\\");
-                foreach (string file in files)
+                // List all images on SD card
+                Debug.WriteLine("\nAll images on SD card:");
+                try
                 {
-                    FileInfo info = new FileInfo(file);
-                    Debug.WriteLine($"  {file} - {info.Length} bytes");
+                    string[] files = Directory.GetFiles("D:\\");
+                    foreach (string file in files)
+                    {
+                        FileInfo info = new FileInfo(file);
+                        Debug.WriteLine($"  {file} - {info.Length} bytes");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to list files: {ex.Message}");
                 }
             }
             finally
             {
+                // Always clean up properly
                 camera.Dispose();
-                sdCard.Unmount();
-                Debug.WriteLine("Done!");
+                Debug.WriteLine("Camera disposed");
+
+                if (sdCard.IsMounted)
+                {
+                    try
+                    {
+                        sdCard.Unmount();
+                        Debug.WriteLine("SD card unmounted");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error unmounting SD card: {ex.Message}");
+                    }
+                }
             }
 
+            Debug.WriteLine("\nTest complete!");
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
         }
     }
