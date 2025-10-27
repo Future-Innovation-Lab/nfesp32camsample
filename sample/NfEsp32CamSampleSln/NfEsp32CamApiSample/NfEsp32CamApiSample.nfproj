@@ -25,9 +25,6 @@
     <Reference Include="mscorlib">
       <HintPath>..\..\..\..\..\..\pkgs\nanoFramework.CoreLibrary.1.17.11\lib\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="nanoFramework.Hardware.Esp32.Camera">
-      <HintPath>packages\nanoFramework.Hardware.Esp32.Camera.1.0.1\lib\nanoFramework.Hardware.Esp32.Camera.dll</HintPath>
-    </Reference>
     <Reference Include="nanoFramework.Runtime.Events">
       <HintPath>..\..\..\..\..\..\pkgs\nanoFramework.Runtime.Events.1.11.32\lib\nanoFramework.Runtime.Events.dll</HintPath>
     </Reference>
@@ -35,7 +32,7 @@
       <HintPath>..\..\..\..\..\..\pkgs\nanoFramework.System.Collections.1.5.67\lib\nanoFramework.System.Collections.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.System.Net.Http">
-      <HintPath>packages\nanoFramework.System.Net.Http.1.5.150\lib\nanoFramework.System.Net.Http.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\pkgs\nanoFramework.System.Net.Http.1.5.196\lib\nanoFramework.System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="nanoFramework.System.Text">
       <HintPath>..\..\..\..\..\..\pkgs\nanoFramework.System.Text.1.3.42\lib\nanoFramework.System.Text.dll</HintPath>
@@ -63,6 +60,10 @@
     <ProjectReference Include="..\..\..\nanoFramework.Hardware.Esp32.Camera\nanoFramework.Hardware.Esp32.Camera.nfproj" />
   </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.CSharp.targets')" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="..\..\..\nanoFramework.Hardware.Esp32.Camera\bin\$(Configuration)\nanoFramework.Hardware.Esp32.Camera.pe" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\..\..\nanoFramework.Hardware.Esp32.Camera\bin\$(Configuration)\nanoFramework.Hardware.Esp32.Camera.pdbx" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" Condition="Exists('..\..\..\nanoFramework.Hardware.Esp32.Camera\bin\$(Configuration)\nanoFramework.Hardware.Esp32.Camera.pdbx')" />
+  </Target>
   <ProjectExtensions>
     <ProjectCapabilities>
       <ProjectConfigurationsDeclaredAsItems />
