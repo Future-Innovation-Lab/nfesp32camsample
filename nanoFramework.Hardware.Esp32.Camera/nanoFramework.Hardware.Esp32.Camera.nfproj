@@ -25,6 +25,11 @@
     <Name>nanoFramework.Hardware.Esp32.Camera</Name>
   </PropertyGroup>
    
+    <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>..\sample\packages\nanoFramework.CoreLibrary.1.17.11\lib\mscorlib.dll</HintPath>
+    </Reference>
+      </ItemGroup>
   
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
@@ -37,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>..\..\..\..\pkgs\nanoFramework.CoreLibrary.1.17.11\lib\mscorlib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
