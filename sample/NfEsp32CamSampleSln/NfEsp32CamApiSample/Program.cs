@@ -42,6 +42,25 @@ namespace NfEsp32CamApiSample
             }
 
             Debug.WriteLine("Camera initialized successfully!");
+            
+            // Give camera time to warm up and adjust exposure
+            Debug.WriteLine("Warming up camera (2 seconds)...");
+            Thread.Sleep(2000);
+            
+            // Capture and discard first few frames (they're often dark/underexposed)
+            Debug.WriteLine("Discarding first 3 frames...");
+            for (int i = 0; i < 3; i++)
+            {
+                Debug.WriteLine($"  Warm-up frame {i + 1}/3");
+                byte[] warmup = camera.CaptureImage();
+                if (warmup != null)
+                {
+                    Debug.WriteLine($"  Discarded {warmup.Length} bytes");
+                }
+                Thread.Sleep(500);
+            }
+            
+            Debug.WriteLine("Camera ready for capture!");
 
             try
             {

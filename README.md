@@ -85,18 +85,7 @@ dotnet tool update -g nanoff
 
 ### Setup
 
-1. Open `sample/CameraTest.csproj` in Visual Studio 2022
-2. Right-click project → Manage NuGet Packages
-3. Install required packages (listed in packages.config)
-4. Add reference to `nanoFramework.Hardware.Esp32.Camera.dll` (the library you built)
-
-2. **Open the Sample Project**
-   - Navigate to the `sample` folder
-   - Open `CameraTest.csproj` in Visual Studio 2022
-   - The camera library reference is already included in the deploy folder (`nanoFramework.Hardware.Esp32.Camera`)
-   - Build → Restore NuGet Packages
-   
-3. **Deploy and Run**
+See the [samples documentation](sample/README.md) for detailed setup and usage instructions.
 
 ## Camera Configuration
 
