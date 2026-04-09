@@ -15,7 +15,7 @@
     <RootNamespace>nanoFramework.Hardware.Esp32.Camera</RootNamespace>
     <AssemblyName>nanoFramework.Hardware.Esp32.Camera</AssemblyName>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-   <NF_IsCoreLibrary>True</NF_IsCoreLibrary>
+    <NF_IsCoreLibrary>True</NF_IsCoreLibrary>
     <DocumentationFile>bin\$(Configuration)\nanoFramework.Hardware.Esp32.Camera.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
@@ -24,13 +24,13 @@
     <NF_GenerateSkeletonProjectName>nanoFramework_hardware_esp32_camera_native</NF_GenerateSkeletonProjectName>
     <Name>nanoFramework.Hardware.Esp32.Camera</Name>
   </PropertyGroup>
-   
-    <ItemGroup>
+  <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>..\sample\packages\nanoFramework.CoreLibrary.1.17.11\lib\mscorlib.dll</HintPath>
+      <SpecificVersion>
+      </SpecificVersion>
     </Reference>
-      </ItemGroup>
-  
+  </ItemGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Camera.cs" />
@@ -39,10 +39,6 @@
     <Compile Include="PixelFormat.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib">
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
